@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client"
+  output        = "../src/generated/prisma"
+  moduleFormat  = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum UserRole {
+  MANAGER
+  FAN
+}
+
+model Stadium {
+  id          Int      @id @default(autoincrement())
+  name        String
+  noOfRows    Int      @map("no_of_rows")
+  seatsPerRow Int      @map("seats_per_row")
+  matches     Match[]
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("stadiums")
+}
+
+model Team {
+  id           Int      @id @default(autoincrement())
+  name         String
+  homeMatches  Match[]  @relation("HomeTeam")
+  awayMatches  Match[]  @relation("AwayTeam")
+  preferredBy  User[]
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("teams")
+}
+
+model Match {
+  id              Int          @id @default(autoincrement())
+  dateTime        DateTime     @map("date_time")
+  homeTeamId      Int          @map("home_team_id")
+  awayTeamId      Int          @map("away_team_id")
+  stadiumId       Int          @map("stadium_id")
+  mainRefereeName String       @map("main_referee_name")
+  linesmen1Name   String       @map("linesmen1_name")
+  linesmen2Name   String       @map("linesmen2_name")
+  homeTeam        Team         @relation("HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam        Team         @relation("AwayTeam", fields: [awayTeamId], references: [id])
+  stadium         Stadium      @relation(fields: [stadiumId], references: [id])
+  matchSeats      MatchSeat[]
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  @@map("matches")
+}
+
+model MatchSeat {
+  id         Int      @id @default(autoincrement())
+  seatNumber Int      @map("seat_number")
+  userId     Int      @map("user_id")
+  matchId    Int      @map("match_id")
+  user       User     @relation(fields: [userId], references: [id])
+  match      Match    @relation(fields: [matchId], references: [id])
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@unique([matchId, seatNumber])
+  @@map("match_seats")
+}
+
+model User {
+  id              Int         @id @default(autoincrement())
+  username        String      @unique
+  password        String
+  firstName       String      @map("first_name")
+  lastName        String      @map("last_name")
+  birthDate       DateTime    @map("birth_date")
+  gender          Gender
+  city            String
+  address         String?
+  email           String      @unique
+  role            UserRole
+  approved        Boolean     @default(false)
+  preferredTeamId Int?        @map("preferred_team_id")
+  preferredTeam   Team?       @relation(fields: [preferredTeamId], references: [id])
+  matchSeats      MatchSeat[]
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
