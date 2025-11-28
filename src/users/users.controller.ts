@@ -6,11 +6,16 @@ import { LoginResponseDto } from './dto';
 
 @Controller('users')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
-    @Post('login')
-    async login(@Body() loginUserDto: LoginUserDto): Promise<ApiResponse<LoginResponseDto>> {
-        const result = await this.usersService.login(loginUserDto.username, loginUserDto.password);
-        return ApiResponse.ok(result, 'Login successful');
-    }
+  @Post('login')
+  async login(
+    @Body() loginUserDto: LoginUserDto,
+  ): Promise<ApiResponse<LoginResponseDto>> {
+    const result = await this.usersService.login(
+      loginUserDto.username,
+      loginUserDto.password,
+    );
+    return ApiResponse.ok(result, 'Login successful');
+  }
 }
