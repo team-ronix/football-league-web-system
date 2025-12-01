@@ -2,10 +2,26 @@ import { Controller, Post, UseGuards, Request, Get, HttpCode, HttpStatus, Body, 
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthenticatedGuard } from './guards/authenticated.guard';
 import { ApiResponse } from '@/common/dto/api-response.dto';
-import { LoginDto } from './dto';
+import { LoginDto, RegisterDto } from './dto';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  async register(@Body(new ValidationPipe()) registerDto: RegisterDto): Promise<ApiResponse<any>> {
+    const user = await this.authService.register(registerDto);
+    const { password, ...userWithoutPassword } = user;
+    
+    return ApiResponse.ok({
+      user: userWithoutPassword,
+      message: user.role === 'MANAGER' 
+        ? 'Manager registered successfully and can login immediately' 
+        : 'Registration successful. Please wait for administrator approval before logging in',
+    }, 'Registration successful');
+  }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
