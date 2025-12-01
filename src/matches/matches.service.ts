@@ -1,10 +1,15 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { CreateMatchDto, UpdateMatchDto, ReserveSeatDto, ReservationResponseDto, ReservationTicketDto } from './dto';
+import { MatchesGateway } from './matches.gateway';
+import { SeatReservedEventDto, SeatCancelledEventDto } from './dto/websocket-events.dto';
 
 @Injectable()
 export class MatchesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly matchesGateway: MatchesGateway,
+  ) {}
 
   async create(createMatchDto: CreateMatchDto) {
     // Validate teams exist
@@ -259,7 +264,17 @@ export class MatchesService {
         },
       });
 
-      tickets.push(new ReservationTicketDto(matchId, seatNumber, reservation.createdAt));
+      const ticket = new ReservationTicketDto(matchId, seatNumber, reservation.createdAt);
+      tickets.push(ticket);
+
+      // Broadcast seat reservation event
+      const event = new SeatReservedEventDto(
+        matchId,
+        seatNumber,
+        ticket.ticketNumber,
+        reservation.createdAt,
+      );
+      this.matchesGateway.broadcastSeatReserved(event);
     }
 
     return new ReservationResponseDto(tickets);
@@ -303,11 +318,17 @@ export class MatchesService {
       },
     });
 
+    const cancelledAt = new Date();
+
+    // Broadcast seat cancellation event
+    const event = new SeatCancelledEventDto(matchId, seatNumber, cancelledAt);
+    this.matchesGateway.broadcastSeatCancelled(event);
+
     return {
       message: 'Reservation cancelled successfully',
       matchId,
       seatNumber,
-      cancelledAt: new Date(),
+      cancelledAt,
     };
   }
 }
