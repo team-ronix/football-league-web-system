@@ -5,3 +5,4 @@ export * from './fan.guard';
 export * from './roles.guard';
 export * from './approved-manager.guard';
 export * from './approved-fan.guard';
+export * from './admin.guard';

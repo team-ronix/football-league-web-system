@@ -1,9 +1,15 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { User } from '@/generated/prisma/client';
 import { UserRole } from '@/generated/prisma/enums';
 import { RegisterDto } from './dto';
+
+// Hardcoded admin credentials
+const ADMIN_CREDENTIALS = {
+  username: 'admin',
+  password: 'admin123',
+};
 
 @Injectable()
 export class AuthService {
@@ -41,7 +47,6 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto): Promise<User> {
-    // Check if username already exists
     const existingUsername = await this.prisma.user.findUnique({
       where: { username: registerDto.username },
     });
@@ -50,7 +55,6 @@ export class AuthService {
       throw new ConflictException('Username already exists');
     }
 
-    // Check if email already exists
     const existingEmail = await this.prisma.user.findUnique({
       where: { email: registerDto.email },
     });
@@ -59,7 +63,6 @@ export class AuthService {
       throw new ConflictException('Email already exists');
     }
 
-    // If preferredTeamId is provided, validate that the team exists
     if (registerDto.preferred_team_id) {
       const team = await this.prisma.team.findUnique({
         where: { id: registerDto.preferred_team_id },
@@ -70,10 +73,8 @@ export class AuthService {
       }
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
-    // Create the user
     const user = await this.prisma.user.create({
       data: {
         username: registerDto.username,
@@ -96,4 +97,81 @@ export class AuthService {
 
     return user;
   }
+
+  // Admin authentication (hardcoded credentials)
+  validateAdmin(username: string, password: string): boolean {
+    return username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password;
+  }
+
+
+  async getPendingUsers(): Promise<User[]> {
+    return this.prisma.user.findMany({
+      where: {
+        approved: false,
+      },
+      include: {
+        preferredTeam: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+
+  async approveUser(userId: number): Promise<User> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (user.approved) {
+      throw new ConflictException('User is already approved');
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { approved: true },
+      include: {
+        preferredTeam: true,
+      },
+    });
+  }
+
+  // Remove a user
+  async removeUser(userId: number): Promise<User> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        matchSeats: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.prisma.matchSeat.deleteMany({
+      where: { userId: userId },
+    });
+
+    return this.prisma.user.delete({
+      where: { id: userId },
+    });
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return this.prisma.user.findMany({
+      include: {
+        preferredTeam: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
 }
+
