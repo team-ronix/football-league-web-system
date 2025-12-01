@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { CreateMatchDto, UpdateMatchDto } from './dto';
+import { CreateMatchDto, UpdateMatchDto, ReserveSeatDto, ReservationResponseDto, ReservationTicketDto } from './dto';
 
 @Injectable()
 export class MatchesService {
@@ -205,6 +205,109 @@ export class MatchesService {
       reserved_count: reservedSeats.length,
       vacant_count: totalSeats - reservedSeats.length,
       seats,
+    };
+  }
+
+  async reserveSeats(matchId: number, userId: number, reserveSeatDto: ReserveSeatDto) {
+    // Validate match exists
+    const match = await this.findOne(matchId);
+    
+    // Check if match is in the future
+    if (new Date(match.dateTime) <= new Date()) {
+      throw new BadRequestException('Cannot reserve seats for past matches');
+    }
+
+    const totalSeats = match.stadium.noOfRows * match.stadium.seatsPerRow;
+
+    // Validate all seat numbers are within range
+    for (const seatNumber of reserveSeatDto.seatNumbers) {
+      if (seatNumber < 1 || seatNumber > totalSeats) {
+        throw new BadRequestException(
+          `Seat number ${seatNumber} is invalid. Valid range: 1-${totalSeats}`,
+        );
+      }
+    }
+
+    // Check if seats are already reserved
+    const existingReservations = await this.prisma.matchSeat.findMany({
+      where: {
+        matchId,
+        seatNumber: { in: reserveSeatDto.seatNumbers },
+      },
+    });
+
+    if (existingReservations.length > 0) {
+      const reservedSeats = existingReservations.map(r => r.seatNumber).join(', ');
+      throw new BadRequestException(
+        `The following seats are already reserved: ${reservedSeats}`,
+      );
+    }
+
+    // Dummy credit card validation (we just check format, which is already validated by DTO)
+    // In a real application, you would integrate with a payment gateway here
+
+    // Create reservations
+    const tickets: ReservationTicketDto[] = [];
+    const now = new Date();
+
+    for (const seatNumber of reserveSeatDto.seatNumbers) {
+      const reservation = await this.prisma.matchSeat.create({
+        data: {
+          matchId,
+          userId,
+          seatNumber,
+        },
+      });
+
+      tickets.push(new ReservationTicketDto(matchId, seatNumber, reservation.createdAt));
+    }
+
+    return new ReservationResponseDto(tickets);
+  }
+
+  async cancelReservation(matchId: number, userId: number, seatNumber: number) {
+    // Validate match exists
+    const match = await this.findOne(matchId);
+
+    // Check if reservation exists and belongs to user
+    const reservation = await this.prisma.matchSeat.findFirst({
+      where: {
+        matchId,
+        seatNumber,
+        userId,
+      },
+    });
+
+    if (!reservation) {
+      throw new NotFoundException(
+        'Reservation not found or does not belong to you',
+      );
+    }
+
+    // Check if match is at least 3 days in the future
+    const matchDate = new Date(match.dateTime);
+    const now = new Date();
+    const threeDaysInMs = 3 * 24 * 60 * 60 * 1000;
+    const timeDifference = matchDate.getTime() - now.getTime();
+
+    if (timeDifference < threeDaysInMs) {
+      throw new BadRequestException(
+        'Cannot cancel reservation less than 3 days before the match',
+      );
+    }
+
+    // Delete the reservation
+    await this.prisma.matchSeat.delete({
+      where: {
+        id: reservation.id,
+      },
+    });
+
+    return {
+      message: 'Reservation cancelled successfully',
+      matchId,
+      seatNumber,
+      cancelledAt: new Date(),
     };
   }
 }

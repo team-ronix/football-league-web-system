@@ -5,15 +5,18 @@ import {
   Body,
   Patch,
   Param,
+  Delete,
   UseGuards,
   ParseIntPipe,
   Req,
 } from '@nestjs/common';
 import { MatchesService } from './matches.service';
-import { CreateMatchDto, UpdateMatchDto } from './dto';
+import { CreateMatchDto, UpdateMatchDto, ReserveSeatDto } from './dto';
 import { ApprovedManagerGuard } from '@/auth/guards/approved-manager.guard';
 import { AuthenticatedGuard } from '@/auth/guards/authenticated.guard';
 import { UserRole } from '@/generated/prisma/enums';
+import { ApprovedFanGuard } from '@/auth/guards/approved-fan.guard';
+import { ApiResponse } from '@/common/dto/api-response.dto';
 
 @Controller('matches')
 export class MatchesController {
@@ -55,5 +58,35 @@ export class MatchesController {
     } else {
       return this.matchesService.getMatchSeatsPublic(id);
     }
+  }
+
+  @Post(':id/reserve')
+  @UseGuards(AuthenticatedGuard, ApprovedFanGuard)
+  async reserveSeats(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: any,
+    @Body() reserveSeatDto: ReserveSeatDto,
+  ) {
+    const result = await this.matchesService.reserveSeats(
+      id,
+      req.user.id,
+      reserveSeatDto,
+    );
+    return ApiResponse.ok(result, 'Seats reserved successfully');
+  }
+
+  @Delete(':id/reservations/:seatNumber')
+  @UseGuards(AuthenticatedGuard, ApprovedFanGuard)
+  async cancelReservation(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('seatNumber', ParseIntPipe) seatNumber: number,
+    @Req() req: any,
+  ) {
+    const result = await this.matchesService.cancelReservation(
+      id,
+      req.user.id,
+      seatNumber,
+    );
+    return ApiResponse.ok(result, 'Reservation cancelled successfully');
   }
 }
