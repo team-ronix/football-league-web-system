@@ -1,25 +1,15 @@
-export class SeatReservedEventDto {
+export class SeatUpdateEventDto {
   matchId: number;
   seatNumber: number;
-  ticketNumber: string;
-  reservedAt: Date;
+  status: number; // 1 = reserved, 0 = vacant
+  userId?: number; // User who made the reservation (if reserved)
+  timestamp: Date;
 
-  constructor(matchId: number, seatNumber: number, ticketNumber: string, reservedAt: Date) {
+  constructor(matchId: number, seatNumber: number, status: number, timestamp: Date, userId?: number) {
     this.matchId = matchId;
     this.seatNumber = seatNumber;
-    this.ticketNumber = ticketNumber;
-    this.reservedAt = reservedAt;
-  }
-}
-
-export class SeatCancelledEventDto {
-  matchId: number;
-  seatNumber: number;
-  cancelledAt: Date;
-
-  constructor(matchId: number, seatNumber: number, cancelledAt: Date) {
-    this.matchId = matchId;
-    this.seatNumber = seatNumber;
-    this.cancelledAt = cancelledAt;
+    this.status = status;
+    this.timestamp = timestamp;
+    this.userId = userId;
   }
 }

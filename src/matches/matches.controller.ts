@@ -33,6 +33,13 @@ export class MatchesController {
     return this.matchesService.findAll();
   }
 
+  @Get('my-reservations')
+  @UseGuards(AuthenticatedGuard, ApprovedFanGuard)
+  async getMyReservations(@Req() req: any) {
+    const result = await this.matchesService.getMyReservations(req.user.id);
+    return ApiResponse.ok(result, 'Reservations retrieved successfully');
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.matchesService.findOne(id);
@@ -56,7 +63,9 @@ export class MatchesController {
     if (isApprovedManager) {
       return this.matchesService.getMatchSeatsManager(id);
     } else {
-      return this.matchesService.getMatchSeatsPublic(id);
+      // Pass user ID for fans to identify their own reservations
+      const userId = user?.id;
+      return this.matchesService.getMatchSeatsPublic(id, userId);
     }
   }
 
@@ -73,6 +82,34 @@ export class MatchesController {
       reserveSeatDto,
     );
     return ApiResponse.ok(result, 'Seats reserved successfully');
+  }
+
+  @Post('reserve')
+  @UseGuards(AuthenticatedGuard, ApprovedFanGuard)
+  async reserveSeatsNew(
+    @Req() req: any,
+    @Body() reservationData: any,
+  ) {
+    const result = await this.matchesService.reserveSeatsNew(
+      reservationData.match_id,
+      req.user.id,
+      reservationData,
+    );
+    return ApiResponse.ok(result, 'Seats reserved successfully');
+  }
+
+  @Post('cancel-reservation')
+  @UseGuards(AuthenticatedGuard, ApprovedFanGuard)
+  async cancelReservationNew(
+    @Req() req: any,
+    @Body() cancellationData: any,
+  ) {
+    const result = await this.matchesService.cancelReservationNew(
+      cancellationData.match_id,
+      req.user.id,
+      cancellationData.seat_number,
+    );
+    return ApiResponse.ok(result, 'Reservation cancelled successfully');
   }
 
   @Delete(':id/reservations/:seatNumber')

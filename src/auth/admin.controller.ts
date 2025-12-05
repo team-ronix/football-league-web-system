@@ -92,7 +92,7 @@ export class AdminController {
   @UseGuards(AdminGuard)
   @HttpCode(HttpStatus.OK)
   async approveUser(
-    @Body() approveUserDto: ApproveUserDto,
+    @Body(new ValidationPipe()) approveUserDto: ApproveUserDto,
   ): Promise<ApiResponse<any>> {
     const user = await this.authService.approveUser(approveUserDto.userId);
     const { password, ...userWithoutPassword } = user;
@@ -100,6 +100,21 @@ export class AdminController {
     return ApiResponse.ok(
       userWithoutPassword,
       'User approved successfully',
+    );
+  }
+
+  @Post('users/unapprove')
+  @UseGuards(AdminGuard)
+  @HttpCode(HttpStatus.OK)
+  async unapproveUser(
+    @Body(new ValidationPipe()) approveUserDto: ApproveUserDto,
+  ): Promise<ApiResponse<any>> {
+    const user = await this.authService.unapproveUser(approveUserDto.userId);
+    const { password, ...userWithoutPassword } = user;
+    
+    return ApiResponse.ok(
+      userWithoutPassword,
+      'User unapproved successfully',
     );
   }
 

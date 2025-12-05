@@ -141,6 +141,29 @@ export class AuthService {
     });
   }
 
+  // Unapprove a user
+  async unapproveUser(userId: number): Promise<User> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (!user.approved) {
+      throw new ConflictException('User is not approved');
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { approved: false },
+      include: {
+        preferredTeam: true,
+      },
+    });
+  }
+
   // Remove a user
   async removeUser(userId: number): Promise<User> {
     const user = await this.prisma.user.findUnique({
@@ -170,6 +193,48 @@ export class AuthService {
       },
       orderBy: {
         createdAt: 'desc',
+      },
+    });
+  }
+
+  async updateProfile(userId: number, updateData: any): Promise<User> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Validate preferred team if provided
+    if (updateData.preferred_team_id) {
+      const team = await this.prisma.team.findUnique({
+        where: { id: updateData.preferred_team_id },
+      });
+
+      if (!team) {
+        throw new NotFoundException('Preferred team does not exist');
+      }
+    }
+
+    // Build update data object
+    const data: any = {};
+    
+    if (updateData.first_name) data.firstName = updateData.first_name;
+    if (updateData.last_name) data.lastName = updateData.last_name;
+    if (updateData.date_of_birth) data.birthDate = new Date(updateData.date_of_birth);
+    if (updateData.gender) data.gender = updateData.gender;
+    if (updateData.city) data.city = updateData.city;
+    if (updateData.address !== undefined) data.address = updateData.address;
+    if (updateData.preferred_team_id !== undefined) {
+      data.preferredTeamId = updateData.preferred_team_id || null;
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data,
+      include: {
+        preferredTeam: true,
       },
     });
   }

@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Request, Get, HttpCode, HttpStatus, Body, ValidationPipe } from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Get, HttpCode, HttpStatus, Body, ValidationPipe, Patch } from '@nestjs/common';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { AuthenticatedGuard } from './guards/authenticated.guard';
 import { ApiResponse } from '@/common/dto/api-response.dto';
@@ -56,7 +56,26 @@ export class AuthController {
   @Get('profile')
   @UseGuards(AuthenticatedGuard)
   async getProfile(@Request() req): Promise<ApiResponse<any>> {
-    const { password, ...userWithoutPassword } = req.user;
+    let userWithoutPassword: any = null;
+    if(req.user) {
+      const { password, ..._userWithoutPassword } = req.user;
+      userWithoutPassword = _userWithoutPassword;
+    } else if(req.session && req.session.admin) {
+      userWithoutPassword = {
+        username: req.session.admin.username,
+          role: 'ADMIN',
+          loginTime: req.session.admin.loginTime,
+      };
+    }
+   
     return ApiResponse.ok(userWithoutPassword, 'Profile retrieved successfully');
+  }
+
+  @Patch('profile')
+  @UseGuards(AuthenticatedGuard)
+  async updateProfile(@Request() req, @Body() updateData: any): Promise<ApiResponse<any>> {
+    const updatedUser = await this.authService.updateProfile(req.user.id, updateData);
+    const { password, ...userWithoutPassword } = updatedUser;
+    return ApiResponse.ok(userWithoutPassword, 'Profile updated successfully');
   }
 }
