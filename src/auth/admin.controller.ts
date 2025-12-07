@@ -37,7 +37,6 @@ export class AdminController {
       throw new UnauthorizedException('Invalid admin credentials');
     }
 
-    // Store admin session
     req.session.admin = {
       username: adminLoginDto.username,
       loginTime: new Date(),

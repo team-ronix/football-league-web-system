@@ -22,7 +22,7 @@ async function bootstrap() {
     session({
       store: new FileStoreSession({
         path: './sessions',
-        ttl: 604800, // 7 days in seconds
+        ttl: 604800,
         retries: 0,
       }),
       secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',

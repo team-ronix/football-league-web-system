@@ -32,7 +32,6 @@ export class MatchesGateway implements OnGatewayConnection, OnGatewayDisconnect 
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  // Allow clients to subscribe to specific match updates
   @SubscribeMessage('subscribe-match')
   handleSubscribeToMatch(
     @MessageBody() payload: { matchId: number },
@@ -45,7 +44,6 @@ export class MatchesGateway implements OnGatewayConnection, OnGatewayDisconnect 
     client.emit('subscribed', { matchId, message: `Subscribed to match ${matchId} updates` });
   }
 
-  // Allow clients to unsubscribe from specific match updates
   @SubscribeMessage('unsubscribe-match')
   handleUnsubscribeFromMatch(
     @MessageBody() payload: { matchId: number },
@@ -58,7 +56,6 @@ export class MatchesGateway implements OnGatewayConnection, OnGatewayDisconnect 
     client.emit('unsubscribed', { matchId, message: `Unsubscribed from match ${matchId} updates` });
   }
 
-  // Broadcast seat status update to all clients watching this match
   broadcastSeatUpdate(event: SeatUpdateEventDto): void {
     const room = `match-${event.matchId}`;
     this.server.to(room).emit('seat-update', event);

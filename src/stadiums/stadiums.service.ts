@@ -37,7 +37,7 @@ export class StadiumsService {
   }
 
   async update(id: number, updateStadiumDto: UpdateStadiumDto) {
-    await this.findOne(id); // Check if exists
+    await this.findOne(id);
 
     return this.prisma.stadium.update({
       where: { id },
@@ -50,7 +50,7 @@ export class StadiumsService {
   }
 
   async remove(id: number) {
-    await this.findOne(id); // Check if exists
+    await this.findOne(id);
 
     return this.prisma.stadium.delete({
       where: { id },

@@ -5,7 +5,6 @@ import { User } from '@/generated/prisma/client';
 import { UserRole } from '@/generated/prisma/enums';
 import { RegisterDto } from './dto';
 
-// Hardcoded admin credentials
 const ADMIN_CREDENTIALS = {
   username: 'admin',
   password: 'admin123',
@@ -29,7 +28,6 @@ export class AuthService {
       return null;
     }
 
-    // Check if user is approved (for fans) or is a manager
     if (user.role === UserRole.FAN && !user.approved) {
       throw new UnauthorizedException('Account not yet approved by administrator');
     }
@@ -87,7 +85,7 @@ export class AuthService {
         address: registerDto.address,
         email: registerDto.email,
         role: registerDto.role,
-        approved: false, // New users need admin approval by default
+        approved: false,
         preferredTeamId: registerDto.preferred_team_id || null,
       },
       include: {
@@ -98,7 +96,6 @@ export class AuthService {
     return user;
   }
 
-  // Admin authentication (hardcoded credentials)
   validateAdmin(username: string, password: string): boolean {
     return username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password;
   }
@@ -141,7 +138,6 @@ export class AuthService {
     });
   }
 
-  // Unapprove a user
   async unapproveUser(userId: number): Promise<User> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -164,7 +160,6 @@ export class AuthService {
     });
   }
 
-  // Remove a user
   async removeUser(userId: number): Promise<User> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -206,7 +201,6 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
-    // Validate preferred team if provided
     if (updateData.preferred_team_id) {
       const team = await this.prisma.team.findUnique({
         where: { id: updateData.preferred_team_id },
@@ -217,7 +211,6 @@ export class AuthService {
       }
     }
 
-    // Build update data object
     const data: any = {};
     
     if (updateData.first_name) data.firstName = updateData.first_name;

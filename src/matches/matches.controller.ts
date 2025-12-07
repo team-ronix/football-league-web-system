@@ -56,14 +56,12 @@ export class MatchesController {
 
   @Get(':id/seats')
   getMatchSeats(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
-    // Check if user is authenticated and is an approved manager
     const user = req.user;
     const isApprovedManager = user && user.role === UserRole.MANAGER && user.approved;
 
     if (isApprovedManager) {
       return this.matchesService.getMatchSeatsManager(id);
     } else {
-      // Pass user ID for fans to identify their own reservations
       const userId = user?.id;
       return this.matchesService.getMatchSeatsPublic(id, userId);
     }

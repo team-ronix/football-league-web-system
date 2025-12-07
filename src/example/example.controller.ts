@@ -3,19 +3,14 @@ import { ManagerGuard, FanGuard, AuthenticatedGuard, RolesGuard, Roles } from '@
 import { ApiResponse } from '@/common/dto/api-response.dto';
 import { UserRole } from '@/generated/prisma/enums';
 
-/**
- * Example controller demonstrating how to use authentication guards
- */
 @Controller('example')
 export class ExampleController {
   
-  // Anyone can access this endpoint (no guard)
   @Get('public')
   async publicEndpoint(): Promise<ApiResponse<string>> {
     return ApiResponse.ok('This is a public endpoint', 'Success');
   }
 
-  // Only authenticated users can access this
   @UseGuards(AuthenticatedGuard)
   @Get('authenticated')
   async authenticatedEndpoint(@Request() req): Promise<ApiResponse<any>> {
@@ -25,7 +20,6 @@ export class ExampleController {
     );
   }
 
-  // Only managers can access this
   @UseGuards(ManagerGuard)
   @Get('manager-only')
   async managerOnlyEndpoint(@Request() req): Promise<ApiResponse<string>> {
@@ -35,7 +29,6 @@ export class ExampleController {
     );
   }
 
-  // Only fans can access this
   @UseGuards(FanGuard)
   @Get('fan-only')
   async fanOnlyEndpoint(@Request() req): Promise<ApiResponse<string>> {
@@ -45,7 +38,6 @@ export class ExampleController {
     );
   }
 
-  // Both managers and fans can access this
   @UseGuards(AuthenticatedGuard, RolesGuard)
   @Roles(UserRole.MANAGER, UserRole.FAN)
   @Get('multi-role')
