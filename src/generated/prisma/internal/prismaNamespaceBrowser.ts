@@ -153,12 +153,27 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-export const QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
+export const StadiumOrderByRelevanceFieldEnum = {
+  name: 'name'
 } as const
 
-export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+export type StadiumOrderByRelevanceFieldEnum = (typeof StadiumOrderByRelevanceFieldEnum)[keyof typeof StadiumOrderByRelevanceFieldEnum]
+
+
+export const TeamOrderByRelevanceFieldEnum = {
+  name: 'name'
+} as const
+
+export type TeamOrderByRelevanceFieldEnum = (typeof TeamOrderByRelevanceFieldEnum)[keyof typeof TeamOrderByRelevanceFieldEnum]
+
+
+export const MatchOrderByRelevanceFieldEnum = {
+  mainRefereeName: 'mainRefereeName',
+  linesmen1Name: 'linesmen1Name',
+  linesmen2Name: 'linesmen2Name'
+} as const
+
+export type MatchOrderByRelevanceFieldEnum = (typeof MatchOrderByRelevanceFieldEnum)[keyof typeof MatchOrderByRelevanceFieldEnum]
 
 
 export const NullsOrder = {
@@ -167,4 +182,17 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const UserOrderByRelevanceFieldEnum = {
+  username: 'username',
+  password: 'password',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  city: 'city',
+  address: 'address',
+  email: 'email'
+} as const
+
+export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
 

@@ -243,6 +243,7 @@ export type StadiumOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   matches?: Prisma.MatchOrderByRelationAggregateInput
+  _relevance?: Prisma.StadiumOrderByRelevanceInput
 }
 
 export type StadiumWhereUniqueInput = Prisma.AtLeast<{
@@ -346,6 +347,12 @@ export type StadiumUncheckedUpdateManyInput = {
   seatsPerRow?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type StadiumOrderByRelevanceInput = {
+  fields: Prisma.StadiumOrderByRelevanceFieldEnum | Prisma.StadiumOrderByRelevanceFieldEnum[]
+  sort: Prisma.SortOrder
+  search: string
 }
 
 export type StadiumCountOrderByAggregateInput = {
@@ -514,23 +521,7 @@ export type StadiumSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   _count?: boolean | Prisma.StadiumCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["stadium"]>
 
-export type StadiumSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  name?: boolean
-  noOfRows?: boolean
-  seatsPerRow?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-}, ExtArgs["result"]["stadium"]>
 
-export type StadiumSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  name?: boolean
-  noOfRows?: boolean
-  seatsPerRow?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-}, ExtArgs["result"]["stadium"]>
 
 export type StadiumSelectScalar = {
   id?: boolean
@@ -546,8 +537,6 @@ export type StadiumInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   matches?: boolean | Prisma.Stadium$matchesArgs<ExtArgs>
   _count?: boolean | Prisma.StadiumCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type StadiumIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type StadiumIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $StadiumPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Stadium"
@@ -679,30 +668,6 @@ export interface StadiumDelegate<ExtArgs extends runtime.Types.Extensions.Intern
   createMany<T extends StadiumCreateManyArgs>(args?: Prisma.SelectSubset<T, StadiumCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many Stadiums and returns the data saved in the database.
-   * @param {StadiumCreateManyAndReturnArgs} args - Arguments to create many Stadiums.
-   * @example
-   * // Create many Stadiums
-   * const stadium = await prisma.stadium.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many Stadiums and only return the `id`
-   * const stadiumWithIdOnly = await prisma.stadium.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends StadiumCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, StadiumCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StadiumPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a Stadium.
    * @param {StadiumDeleteArgs} args - Arguments to delete one Stadium.
    * @example
@@ -765,36 +730,6 @@ export interface StadiumDelegate<ExtArgs extends runtime.Types.Extensions.Intern
    * 
    */
   updateMany<T extends StadiumUpdateManyArgs>(args: Prisma.SelectSubset<T, StadiumUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more Stadiums and returns the data updated in the database.
-   * @param {StadiumUpdateManyAndReturnArgs} args - Arguments to update many Stadiums.
-   * @example
-   * // Update many Stadiums
-   * const stadium = await prisma.stadium.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more Stadiums and only return the `id`
-   * const stadiumWithIdOnly = await prisma.stadium.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends StadiumUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, StadiumUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StadiumPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one Stadium.
@@ -1224,25 +1159,6 @@ export type StadiumCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Stadium createManyAndReturn
- */
-export type StadiumCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Stadium
-   */
-  select?: Prisma.StadiumSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Stadium
-   */
-  omit?: Prisma.StadiumOmit<ExtArgs> | null
-  /**
-   * The data used to create many Stadiums.
-   */
-  data: Prisma.StadiumCreateManyInput | Prisma.StadiumCreateManyInput[]
-  skipDuplicates?: boolean
-}
-
-/**
  * Stadium update
  */
 export type StadiumUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1272,32 +1188,6 @@ export type StadiumUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
  * Stadium updateMany
  */
 export type StadiumUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * The data used to update Stadiums.
-   */
-  data: Prisma.XOR<Prisma.StadiumUpdateManyMutationInput, Prisma.StadiumUncheckedUpdateManyInput>
-  /**
-   * Filter which Stadiums to update
-   */
-  where?: Prisma.StadiumWhereInput
-  /**
-   * Limit how many Stadiums to update.
-   */
-  limit?: number
-}
-
-/**
- * Stadium updateManyAndReturn
- */
-export type StadiumUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Stadium
-   */
-  select?: Prisma.StadiumSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the Stadium
-   */
-  omit?: Prisma.StadiumOmit<ExtArgs> | null
   /**
    * The data used to update Stadiums.
    */

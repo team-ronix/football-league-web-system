@@ -659,27 +659,7 @@ export type MatchSeatSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["matchSeat"]>
 
-export type MatchSeatSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  seatNumber?: boolean
-  userId?: boolean
-  matchId?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["matchSeat"]>
 
-export type MatchSeatSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  id?: boolean
-  seatNumber?: boolean
-  userId?: boolean
-  matchId?: boolean
-  createdAt?: boolean
-  updatedAt?: boolean
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
-}, ExtArgs["result"]["matchSeat"]>
 
 export type MatchSeatSelectScalar = {
   id?: boolean
@@ -692,14 +672,6 @@ export type MatchSeatSelectScalar = {
 
 export type MatchSeatOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "seatNumber" | "userId" | "matchId" | "createdAt" | "updatedAt", ExtArgs["result"]["matchSeat"]>
 export type MatchSeatInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
-}
-export type MatchSeatIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
-}
-export type MatchSeatIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   match?: boolean | Prisma.MatchDefaultArgs<ExtArgs>
 }
@@ -835,30 +807,6 @@ export interface MatchSeatDelegate<ExtArgs extends runtime.Types.Extensions.Inte
   createMany<T extends MatchSeatCreateManyArgs>(args?: Prisma.SelectSubset<T, MatchSeatCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
 
   /**
-   * Create many MatchSeats and returns the data saved in the database.
-   * @param {MatchSeatCreateManyAndReturnArgs} args - Arguments to create many MatchSeats.
-   * @example
-   * // Create many MatchSeats
-   * const matchSeat = await prisma.matchSeat.createManyAndReturn({
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Create many MatchSeats and only return the `id`
-   * const matchSeatWithIdOnly = await prisma.matchSeat.createManyAndReturn({
-   *   select: { id: true },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  createManyAndReturn<T extends MatchSeatCreateManyAndReturnArgs>(args?: Prisma.SelectSubset<T, MatchSeatCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MatchSeatPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-  /**
    * Delete a MatchSeat.
    * @param {MatchSeatDeleteArgs} args - Arguments to delete one MatchSeat.
    * @example
@@ -921,36 +869,6 @@ export interface MatchSeatDelegate<ExtArgs extends runtime.Types.Extensions.Inte
    * 
    */
   updateMany<T extends MatchSeatUpdateManyArgs>(args: Prisma.SelectSubset<T, MatchSeatUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<Prisma.BatchPayload>
-
-  /**
-   * Update zero or more MatchSeats and returns the data updated in the database.
-   * @param {MatchSeatUpdateManyAndReturnArgs} args - Arguments to update many MatchSeats.
-   * @example
-   * // Update many MatchSeats
-   * const matchSeat = await prisma.matchSeat.updateManyAndReturn({
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * 
-   * // Update zero or more MatchSeats and only return the `id`
-   * const matchSeatWithIdOnly = await prisma.matchSeat.updateManyAndReturn({
-   *   select: { id: true },
-   *   where: {
-   *     // ... provide filter here
-   *   },
-   *   data: [
-   *     // ... provide data here
-   *   ]
-   * })
-   * Note, that providing `undefined` is treated as the value not being there.
-   * Read more here: https://pris.ly/d/null-undefined
-   * 
-   */
-  updateManyAndReturn<T extends MatchSeatUpdateManyAndReturnArgs>(args: Prisma.SelectSubset<T, MatchSeatUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MatchSeatPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
   /**
    * Create or update one MatchSeat.
@@ -1381,29 +1299,6 @@ export type MatchSeatCreateManyArgs<ExtArgs extends runtime.Types.Extensions.Int
 }
 
 /**
- * MatchSeat createManyAndReturn
- */
-export type MatchSeatCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the MatchSeat
-   */
-  select?: Prisma.MatchSeatSelectCreateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the MatchSeat
-   */
-  omit?: Prisma.MatchSeatOmit<ExtArgs> | null
-  /**
-   * The data used to create many MatchSeats.
-   */
-  data: Prisma.MatchSeatCreateManyInput | Prisma.MatchSeatCreateManyInput[]
-  skipDuplicates?: boolean
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MatchSeatIncludeCreateManyAndReturn<ExtArgs> | null
-}
-
-/**
  * MatchSeat update
  */
 export type MatchSeatUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1445,36 +1340,6 @@ export type MatchSeatUpdateManyArgs<ExtArgs extends runtime.Types.Extensions.Int
    * Limit how many MatchSeats to update.
    */
   limit?: number
-}
-
-/**
- * MatchSeat updateManyAndReturn
- */
-export type MatchSeatUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the MatchSeat
-   */
-  select?: Prisma.MatchSeatSelectUpdateManyAndReturn<ExtArgs> | null
-  /**
-   * Omit specific fields from the MatchSeat
-   */
-  omit?: Prisma.MatchSeatOmit<ExtArgs> | null
-  /**
-   * The data used to update MatchSeats.
-   */
-  data: Prisma.XOR<Prisma.MatchSeatUpdateManyMutationInput, Prisma.MatchSeatUncheckedUpdateManyInput>
-  /**
-   * Filter which MatchSeats to update
-   */
-  where?: Prisma.MatchSeatWhereInput
-  /**
-   * Limit how many MatchSeats to update.
-   */
-  limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MatchSeatIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
