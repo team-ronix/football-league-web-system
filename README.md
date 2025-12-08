@@ -1,53 +1,248 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# EFL - Egyptian Football League Management System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+🔗 **Live Demo:** [https://team-ronix.dedyn.io/](https://team-ronix.dedyn.io/)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+A comprehensive football league management system built with NestJS backend and React frontend. The system manages stadiums, teams, matches, and ticket reservations with role-based access control.
 
-## Description
+## 🎯 Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### 👤 User Roles
 
-## Project setup
+#### **Admin**
+- View and manage all registered users
+- Approve or reject Fan account registrations
+- Remove users from the system
+- Monitor system activity
+- **Login:** `admin` / `admin123`
+
+#### **Manager** (Auto-approved on registration)
+- Create and manage stadiums (name, rows, seats per row)
+- Create and manage matches (teams, stadium, referees, date/time)
+- Edit match details
+- Delete matches and stadiums
+- View all matches and stadiums
+
+#### **Fan** (Requires admin approval)
+- Browse available matches
+- View match details and seat availability in real-time
+- Reserve seats for matches
+- View personal reservation history
+- Update profile and preferred team
+- Real-time seat updates via WebSocket
+
+### 🏟️ Stadium Management
+- Create stadiums with customizable seating capacity
+- Define number of rows and seats per row
+- View stadium details and associated matches
+
+### ⚽ Match Management
+- Create matches with home/away teams
+- Assign stadiums and referee details
+- Set match date and time
+- Real-time seat availability tracking
+- Edit and delete matches (managers only)
+
+### 🎫 Ticket Reservation System
+- Interactive seat selection interface
+- Real-time seat availability updates
+- Prevent double-booking
+- View reservation history
+- Cancel reservations
+
+### 🔒 Security & Authentication
+- Session-based authentication with Passport.js
+- Role-based access control (RBAC)
+- Password hashing with bcrypt
+- Protected routes with guards
+- Admin approval workflow for fans
+
+### 🔄 Real-time Features
+- WebSocket integration with Socket.IO
+- Live seat availability updates
+- Real-time match status changes
+- Instant reservation notifications
+
+## 🛠️ Tech Stack
+
+### Backend
+- **Framework:** NestJS
+- **Database:** PostgreSQL/MySQL (configurable via environment)
+- **ORM:** Prisma
+- **Authentication:** Passport.js with session strategy
+- **Real-time:** Socket.IO
+- **Validation:** class-validator & class-transformer
+
+### Frontend
+- **Framework:** React 19
+- **Routing:** React Router DOM
+- **Styling:** Tailwind CSS 4
+- **HTTP Client:** Axios
+- **Real-time:** Socket.IO Client
+- **Build Tool:** Vite
+
+## 📦 Installation
+
+### Prerequisites
+- Node.js (v18 or higher)
+- PostgreSQL or MySQL database
+- npm or yarn
+
+### Backend Setup
 
 ```bash
-$ npm install
+cd EFL
+
+# Install dependencies
+npm install
+
+# Configure environment variables
+cp .env.example .env
+# Edit .env with your database credentials
+
+# Run database migrations
+npm run migrate
+
+# Start development server
+npm run start:dev
 ```
 
-## Compile and run the project
+### Frontend Setup
 
 ```bash
-# development
-$ npm run start
+cd EFL-front
 
-# watch mode
-$ npm run start:dev
+# Install dependencies
+npm install
 
-# production mode
-$ npm run start:prod
+# Start development server
+npm run dev
 ```
 
-## Run tests
+## 🔧 Configuration
 
+### Environment Variables (Backend)
+
+```env
+# Database type: "postgresql" or "mysql"
+DATABASE_TYPE="postgresql"
+
+# PostgreSQL connection
+DATABASE_URL="postgresql://user:password@localhost:5432/EFL?schema=public"
+
+# MySQL connection (when using MySQL)
+# DATABASE_HOST="localhost"
+# DATABASE_USER="root"
+# DATABASE_PASSWORD="password"
+# DATABASE_NAME="EFL"
+
+# Frontend URL for CORS
+FRONTEND_URL="http://localhost:5173"
+```
+
+### Database Provider
+
+The system supports both PostgreSQL and MySQL. Configure via `DATABASE_TYPE` environment variable and update `prisma/schema.prisma`:
+
+```prisma
+datasource db {
+  provider = "postgresql" // or "mysql"
+}
+```
+
+## 📱 API Endpoints
+
+### Authentication
+- `POST /auth/login` - User login (Manager/Fan)
+- `POST /auth/register` - User registration
+- `POST /auth/logout` - Logout
+- `GET /auth/profile` - Get current user profile
+- `PATCH /auth/profile` - Update profile
+
+### Admin
+- `POST /admin/login` - Admin login
+- `GET /admin/users` - Get all users
+- `GET /admin/users/pending` - Get pending approvals
+- `POST /admin/users/approve` - Approve user
+- `POST /admin/users/unapprove` - Unapprove user
+- `DELETE /admin/users/:id` - Remove user
+
+### Matches
+- `GET /matches` - List all matches
+- `GET /matches/:id` - Get match details
+- `POST /matches` - Create match (Manager only)
+- `PATCH /matches/:id` - Update match (Manager only)
+- `DELETE /matches/:id` - Delete match (Manager only)
+- `POST /matches/:id/reserve` - Reserve seat (Fan only)
+- `DELETE /matches/:matchId/cancel/:seatId` - Cancel reservation
+- `GET /matches/my-reservations` - Get user reservations
+
+### Stadiums
+- `GET /stadiums` - List all stadiums
+- `GET /stadiums/:id` - Get stadium details
+- `POST /stadiums` - Create stadium (Manager only)
+- `PATCH /stadiums/:id` - Update stadium (Manager only)
+- `DELETE /stadiums/:id` - Delete stadium (Manager only)
+
+### Teams
+- `GET /teams` - List all teams
+- `GET /teams/:id` - Get team details
+
+## 🚀 Deployment
+
+The project includes GitHub Actions workflows for automated deployment to VPS using PM2.
+
+### Backend Deployment
 ```bash
-# unit tests
+# On VPS: Install PM2
+npm install pm2@latest -g
+
+# Start application
+pm2 start npm --name efl-backend -- start:prod
+pm2 save
+```
+
+### Frontend Deployment
+```bash
+# Build for production
+npm run build
+
+# Serve with nginx or similar
+```
+
+## 📝 Scripts
+
+### Backend
+```bash
+npm run start:dev    # Start development server
+npm run build        # Build for production
+npm run start:prod   # Start production server
+npm run migrate      # Run database migrations
+npm run prisma:studio # Open Prisma Studio
+```
+
+### Frontend
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+```
+
+## 👥 Default Credentials
+
+- **Admin:** `admin` / `admin123`
+- Create Manager and Fan accounts via registration
+
+## 📄 License
+
+UNLICENSED - Private project
+
+## 👨‍💻 Author
+
+Team Ronix
+
+---
+
+Built with ❤️ using NestJS and React
 $ npm run test
 
 # e2e tests
