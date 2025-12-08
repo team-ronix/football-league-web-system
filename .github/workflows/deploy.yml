@@ -17,7 +17,7 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             . ~/.bashrc
-            
+
             cd /home/team-ronix-api/htdocs/api.team-ronix.dedyn.io
 
             # Reset changes & pull latest code
@@ -37,7 +37,7 @@ jobs:
             npm run build
 
             # Restart the application with PM2
-            pm2 restart efl-backend || pm2 start dist/main.js --name efl-backend
+            pm2 restart efl-backend || pm2 start dist/src/main.js --name efl-backend
 
             # Save PM2 configuration
             pm2 save
